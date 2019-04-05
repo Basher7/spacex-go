@@ -19,9 +19,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _darkTheme = false;
   bool _oledBlack = false;
 
+  bool _sans = false;
+
   @override
   void initState() {
     Themes _theme = ScopedModel.of<AppModel>(context)?.theme ?? Themes.dark;
+    Fonts _font = ScopedModel.of<AppModel>(context)?.font ?? Fonts.normal;
 
     if (_theme == Themes.light)
       setState(() {
@@ -38,6 +41,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _darkTheme = true;
         _oledBlack = false;
       });
+
+    setState(() => _sans = _font == Fonts.sans);
 
     super.initState();
   }
@@ -93,6 +98,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                   ),
                 ),
+                Separator.divider(height: 0, indent: 16),
+                ListTile(
+                  title: Text(FlutterI18n.translate(
+                    context,
+                    'settings.joke.title',
+                  )),
+                  subtitle: Text(FlutterI18n.translate(
+                    context,
+                    'settings.joke.body',
+                  )),
+                  trailing: Switch(
+                    activeColor: Theme.of(context).accentColor,
+                    value: _sans,
+                    onChanged: (value) => _changeFont(
+                          model: model,
+                          font: value ? Fonts.sans : Fonts.normal,
+                        ),
+                  ),
+                ),
                 Separator.divider(),
               ],
             ),
@@ -120,5 +144,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _darkTheme = false;
         _oledBlack = false;
       });
+  }
+
+  void _changeFont({AppModel model, Fonts font}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setInt('font', font.index);
+    model.font = font;
+
+    setState(() => _sans = font == Fonts.sans);
   }
 }

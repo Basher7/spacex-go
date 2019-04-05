@@ -405,6 +405,10 @@
     "oled_black": {
       "title": "OLED black",
       "body": "If you prefer a true black"
+    },
+    "joke": {
+      "title": "Joke mode",
+      "body": "* screams in comic sans *"
     }
   }
 }

@@ -6,26 +6,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../util/colors.dart';
 
 enum Themes { light, dark, black }
+enum Fonts { normal, sans }
 
 /// APP MODEL
 /// Specific general settings about the app.
 class AppModel extends Model {
   FlutterLocalNotificationsPlugin notifications;
 
-  static String font = DateTime.now().month == 4 && DateTime.now().day == 1
-      ? 'ComicSans'
-      : 'ProductSans';
-  static final List<ThemeData> _themes = [
+  static List<ThemeData> _themes = [
     ThemeData(
       brightness: Brightness.light,
-      fontFamily: font,
+      fontFamily: _fontData,
       primaryColor: lightPrimaryColor,
       accentColor: lightAccentColor,
       dividerColor: lightDividerColor,
     ),
     ThemeData(
       brightness: Brightness.dark,
-      fontFamily: font,
+      fontFamily: _fontData,
       primaryColor: darkPrimaryColor,
       accentColor: darkAccentColor,
       canvasColor: darkBackgroundColor,
@@ -36,7 +34,7 @@ class AppModel extends Model {
     ),
     ThemeData(
       brightness: Brightness.dark,
-      fontFamily: font,
+      fontFamily: _fontData,
       primaryColor: blackPrimaryColor,
       accentColor: blackAccentColor,
       canvasColor: blackBackgroundColor,
@@ -46,25 +44,42 @@ class AppModel extends Model {
       dialogBackgroundColor: blackCardColor,
     )
   ];
+  static final List<String> _fonts = [
+    'ProductSans',
+    'ComicSans',
+  ];
+
+  Fonts _font = Fonts.normal;
+  static String _fontData = 'ProductSans';
+
+  get font => _font;
+  get fontData => _fontData;
+
+  set font(Fonts font) {
+    _font = font;
+    fontData = font;
+    notifyListeners();
+  }
+
+  set fontData(Fonts font) {
+    _fontData = _fonts[font.index];
+    notifyListeners();
+  }
 
   Themes _theme = Themes.dark;
-
   ThemeData _themeData = _themes[1];
 
   get theme => _theme;
-
-  set theme(Themes newTheme) {
-    if (newTheme != null) {
-      _theme = newTheme;
-      themeData = newTheme;
-      notifyListeners();
-    }
-  }
-
   get themeData => _themeData;
 
-  set themeData(Themes newTheme) {
-    _themeData = _themes[newTheme.index];
+  set theme(Themes theme) {
+    _theme = theme;
+    themeData = theme;
+    notifyListeners();
+  }
+
+  set themeData(Themes theme) {
+    _themeData = _themes[theme.index];
     notifyListeners();
   }
 
@@ -77,6 +92,15 @@ class AppModel extends Model {
     } catch (e) {
       prefs.setInt('theme', 1);
     }
+
+    // Loads the font
+    try {
+      font = Fonts.values[prefs.getInt('font')];
+    } catch (e) {
+      prefs.setInt('font', 0);
+    }
+    if (DateTime.now().month == 4 && DateTime.now().day == 1)
+      prefs.setInt('font', 1);
 
     // Inits notifications system
     notifications = FlutterLocalNotificationsPlugin();

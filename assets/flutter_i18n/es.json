@@ -405,6 +405,10 @@
     "oled_black": {
       "title": "Negro OLED",
       "body": "Si prefieres un negro más puro"
+    },
+    "joke": {
+      "title": "Modo chiste",
+      "body": "* grita en comic sans *"
     }
   }
 }
